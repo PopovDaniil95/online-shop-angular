@@ -34,9 +34,15 @@
     color="primary"
     type="submit"
   >
-    Добавить товар
+    {{ isNew ? "Добавить товар" : "Обновить" }}
   </button>
-  <button class="button" mat-flat-button color="primary" (click)="onNoClick()">
+  <button
+    class="button"
+    mat-flat-button
+    color="primary"
+    type="button"
+    (click)="onNoClick()"
+  >
     Отмена
   </button>
 </form>

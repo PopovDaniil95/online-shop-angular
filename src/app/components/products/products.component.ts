@@ -11,15 +11,15 @@ import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
   styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnInit {
-  products: IProducts[];
-  productsSubscription: Subscription;
-  canEdit: boolean = false;
-  canView: boolean = false;
-
   constructor(
     private ProductsService: ProductsService,
     public dialog: MatDialog
   ) {}
+
+  products: IProducts[];
+  productsSubscription: Subscription;
+  canEdit: boolean = false;
+  canView: boolean = false;
 
   ngOnInit(): void {
     this.canEdit = true;
@@ -30,13 +30,52 @@ export class ProductsComponent implements OnInit {
     );
   }
 
-  openDialog(): void {
+  addToBasket(product: IProducts) {
+    this.ProductsService.postProductToBasket(product).subscribe((data) =>
+      console.log(data)
+    );
+  }
+
+  deleteItem(id: number) {
+    this.ProductsService.deleteProduct(id).subscribe(() =>
+      this.products.find((item) => {
+        if (id === item.id) {
+          let idx = this.products.findIndex((data) => data.id === id);
+          this.products.splice(idx, 1);
+        }
+      })
+    );
+  }
+
+  openDialog(product?: IProducts): void {
     let dialogConfig = new MatDialogConfig();
     dialogConfig.width = '500px';
     dialogConfig.disableClose = true;
+    dialogConfig.data = product;
     const dialogRef = this.dialog.open(DialogBoxComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe((data) => {
+      if (data) {
+        if (data && data.id) this.updateData(data);
+        else this.postData(data);
+      }
+    });
   }
 
+  postData(data: IProducts) {
+    console.log(data);
+    this.ProductsService.postProduct(data).subscribe((data) =>
+      this.products.push(data)
+    );
+  }
+
+  updateData(product: IProducts) {
+    this.ProductsService.updateProduct(product).subscribe((data) => {
+      this.products = this.products.map((product) => {
+        if (product.id === data.id) return data;
+        else return product;
+      });
+    });
+  }
   ngOnDestroy() {
     if (this.productsSubscription) this.productsSubscription.unsubscribe();
   }

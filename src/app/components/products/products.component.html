@@ -21,7 +21,15 @@
       <p>Year: {{ product.year }}</p>
     </mat-card-content>
     <mat-card-actions>
-      <button class="button" mat-flat-button color="primary">В корзину</button>
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="addToBasket(product)"
+        type="button"
+      >
+        В корзину
+      </button>
       <button
         class="button"
         mat-flat-button
@@ -30,6 +38,19 @@
       >
         Подробнее
       </button>
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        mat-button
+        [matMenuTriggerFor]="menu"
+      >
+        Ред.
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="deleteItem(product.id)">Удалить</button>
+        <button mat-menu-item (click)="openDialog(product)">Ред.</button>
+      </mat-menu>
     </mat-card-actions>
   </mat-card>
 </div>
